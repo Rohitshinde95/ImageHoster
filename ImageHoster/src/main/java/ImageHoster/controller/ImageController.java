@@ -1,8 +1,10 @@
 package ImageHoster.controller;
 
+import ImageHoster.model.Comment;
 import ImageHoster.model.Image;
 import ImageHoster.model.Tag;
 import ImageHoster.model.User;
+import ImageHoster.service.CommentService;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ public class ImageController {
     @Autowired
     private TagService tagService;
 
+
     //This method displays all the images in the user home page after successful login
     @RequestMapping("images")
     public String getUserImages(Model model) {
@@ -45,19 +48,12 @@ public class ImageController {
     //Also now you need to add the tags of an image in the Model type object
     //Here a list of tags is added in the Model type object
     //this list is then sent to 'images/image.html' file and the tags are displayed
-/*    @RequestMapping("/images/{title}")
-    public String showImage(@PathVariable("title") String title, Model model) {
-        Image image = imageService.getImageByTitle(title);
-        model.addAttribute("image", image);
-        model.addAttribute("tags", image.getTags());
-        return "images/image";
-    }*/
-
-    @RequestMapping("/images/{imageId}")
+    @RequestMapping("/images/{imageId}/{title}")
     public String showImage(@PathVariable("imageId") Integer imageId, Model model) {
         Image image = imageService.getImage(imageId);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
+        model.addAttribute("comments", image.getComments());
         return "images/image";
     }
 
@@ -106,12 +102,12 @@ public class ImageController {
         String tags = convertTagsToString(image.getTags());
         model.addAttribute("image", image);
 
-        if(imageService.checkImageOwner(image,session)) {
+        if (imageService.checkImageOwner(image, session)) {
             model.addAttribute("tags", tags);
             return "images/edit";
-        }else {
+        } else {
             model.addAttribute("tags", image.getTags());
-            model.addAttribute("editError", "");
+            model.addAttribute("editError", "Only the owner of the image can edit the image");
             return "images/image";
         }
     }
@@ -147,7 +143,7 @@ public class ImageController {
         updatedImage.setDate(new Date());
 
         imageService.updateImage(updatedImage);
-        return "redirect:/images/" + updatedImage.getTitle();
+        return "redirect:/images/";
     }
 
 
@@ -155,18 +151,20 @@ public class ImageController {
     //The method calls the deleteImage() method in the business logic passing the id of the image to be deleted
     //Looks for a controller method with request mapping of type '/images'
     @RequestMapping(value = "/deleteImage", method = RequestMethod.DELETE)
-    public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId,Model model,HttpSession session) {
+    public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId, Model model, HttpSession session) {
         Image image = imageService.getImage(imageId);
-        if(imageService.checkImageOwner(image,session)) {
+        if (imageService.checkImageOwner(image, session)) {
             imageService.deleteImage(imageId);
             return "redirect:/images";
-        }else {
+        } else {
             model.addAttribute("image", image);
             model.addAttribute("tags", image.getTags());
-            model.addAttribute("deleteError", "");
+            model.addAttribute("deleteError", "Only the owner of the image can delete the image");
             return "images/image";
         }
     }
+
+
 
 
     //This method converts the image to Base64 format

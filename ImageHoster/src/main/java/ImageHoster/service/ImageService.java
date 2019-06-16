@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -48,11 +46,15 @@ public class ImageService {
         imageRepository.deleteImage(imageId);
     }
 
+    public void createComment() {
+
+    }
+
     //Check if user is the image owner
-    public boolean checkImageOwner(Image image, HttpSession session){
-        User imageOwner=image.getUser();
+    public boolean checkImageOwner(Image image, HttpSession session) {
+        User imageOwner = image.getUser();
         User clickedUser = (User) session.getAttribute("loggeduser");
-        if(imageOwner.getId()==clickedUser.getId()){
+        if (imageOwner.getId() == clickedUser.getId()) {
             return true;
         }
         return false;
