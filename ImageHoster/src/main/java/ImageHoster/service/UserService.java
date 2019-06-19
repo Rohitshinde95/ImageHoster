@@ -5,9 +5,6 @@ import ImageHoster.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Service
 public class UserService {
 
@@ -35,21 +32,5 @@ public class UserService {
         }
     }
 
-    //Validate password strength
-    public boolean validatePassword(String password) {
-        Pattern letter = Pattern.compile(".*[a-zA-Z]+.*");
-        Pattern digit = Pattern.compile("(.)*(\\d)(.)*");
-        Pattern special = Pattern.compile("[a-zA-Z0-9]*");
-
-        Matcher hasLetter = letter.matcher(password);
-        Matcher hasDigit = digit.matcher(password);
-        Matcher hasSpecial = special.matcher(password);
-
-        boolean atleastOneLetter = hasLetter.find();
-        boolean atleastOneDigit = hasDigit.find();
-        boolean atleastOneSpecial = !hasSpecial.matches();
-
-        return (atleastOneLetter && atleastOneDigit && atleastOneSpecial);
-    }
 
 }

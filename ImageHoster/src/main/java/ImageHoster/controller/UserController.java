@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Controller
@@ -41,9 +43,10 @@ public class UserController {
     //This method calls the business logic and after the user record is persisted in the database, directs to login page
     @RequestMapping(value = "users/registration", method = RequestMethod.POST)
     public String registerUser(User user, Model model) {
-        if (userService.validatePassword(user.getPassword())) {
+        if (validatePassword(user.getPassword())) {
             userService.registerUser(user);
-            return "redirect:/users/login";
+            return "users/login";
+
         } else {
             model.addAttribute("User", user);
             model.addAttribute("passwordTypeError", "Password must contain atleast 1 alphabet, 1 number & 1 special character");
@@ -84,5 +87,23 @@ public class UserController {
         List<Image> images = imageService.getAllImages();
         model.addAttribute("images", images);
         return "index";
+    }
+
+
+    //Validate password strength
+    public boolean validatePassword(String password) {
+        Pattern letter = Pattern.compile(".*[a-zA-Z]+.*");
+        Pattern digit = Pattern.compile("(.)*(\\d)(.)*");
+        Pattern special = Pattern.compile("[a-zA-Z0-9]*");
+
+        Matcher hasLetter = letter.matcher(password);
+        Matcher hasDigit = digit.matcher(password);
+        Matcher hasSpecial = special.matcher(password);
+
+        boolean oneLetter = hasLetter.find();
+        boolean oneDigit = hasDigit.find();
+        boolean oneSpecial = !hasSpecial.matches();
+
+        return (oneLetter && oneDigit && oneSpecial);
     }
 }

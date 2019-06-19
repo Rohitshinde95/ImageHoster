@@ -40,9 +40,10 @@ public class CommentController {
         comments.add(newComment);
         image.setComments(comments);
         imageService.updateImage(image);
+
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
         model.addAttribute("comments", comments);
-        return "images/image";
+        return "redirect:/images/" + image.getId() + "/" + image.getTitle();
     }
 }

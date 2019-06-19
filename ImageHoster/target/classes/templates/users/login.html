@@ -12,9 +12,9 @@
 <!-- Get username and password to log in the application-->
 <form th:action="@{/users/login}" th:method="POST" th:object="${User}">
     <label for="username">Username:</label>
-    <input type="text" id="username" name="username"/>
+    <input id="username" name="username" type="text"/>
     <label for="password">Password:</label>
-    <input type="password" id="password" name="password"/>
+    <input id="password" name="password" type="password"/>
     <input type="submit" value="Login"/>
 </form>
 

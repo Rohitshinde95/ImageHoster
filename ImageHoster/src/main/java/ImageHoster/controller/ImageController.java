@@ -1,10 +1,8 @@
 package ImageHoster.controller;
 
-import ImageHoster.model.Comment;
 import ImageHoster.model.Image;
 import ImageHoster.model.Tag;
 import ImageHoster.model.User;
-import ImageHoster.service.CommentService;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,17 +96,18 @@ public class ImageController {
     @RequestMapping(value = "/editImage")
     public String editImage(@RequestParam("imageId") Integer imageId, Model model, HttpSession session) {
         Image image = imageService.getImage(imageId);
-
-        String tags = convertTagsToString(image.getTags());
         model.addAttribute("image", image);
 
-        if (imageService.checkImageOwner(image, session)) {
+        if (checkImageOwner(image, session)) {
+            String tags = convertTagsToString(image.getTags());
             model.addAttribute("tags", tags);
             return "images/edit";
+
         } else {
             model.addAttribute("tags", image.getTags());
+            model.addAttribute("comments", image.getComments());
             model.addAttribute("editError", "Only the owner of the image can edit the image");
-            return "images/image";
+            return "/images/image";
         }
     }
 
@@ -141,9 +140,10 @@ public class ImageController {
         updatedImage.setUser(user);
         updatedImage.setTags(imageTags);
         updatedImage.setDate(new Date());
+        updatedImage.setComments(image.getComments());
 
         imageService.updateImage(updatedImage);
-        return "redirect:/images/";
+        return "redirect:/images/" + updatedImage.getId() + "/" + updatedImage.getTitle();
     }
 
 
@@ -153,18 +153,19 @@ public class ImageController {
     @RequestMapping(value = "/deleteImage", method = RequestMethod.DELETE)
     public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId, Model model, HttpSession session) {
         Image image = imageService.getImage(imageId);
-        if (imageService.checkImageOwner(image, session)) {
-            imageService.deleteImage(imageId);
-            return "redirect:/images";
-        } else {
+        System.out.println("Image="+image);
+        if (!checkImageOwner(image, session)) {
             model.addAttribute("image", image);
+            model.addAttribute("comments", image.getComments());
             model.addAttribute("tags", image.getTags());
             model.addAttribute("deleteError", "Only the owner of the image can delete the image");
-            return "images/image";
+            return "/images/image";
+        } else {
+            imageService.deleteImage(imageId);
+            return "redirect:/images";
         }
+
     }
-
-
 
 
     //This method converts the image to Base64 format
@@ -207,5 +208,17 @@ public class ImageController {
         tagString.append(lastTag.getName());
 
         return tagString.toString();
+    }
+
+
+    //Check image owner
+    public boolean checkImageOwner(Image image, HttpSession session) {
+        User clickedUser = (User) session.getAttribute("loggeduser");
+        int imageOwnerId=image.getUser().getId();
+        int clickedUserId=clickedUser.getId();
+        if (imageOwnerId==clickedUserId)
+            return true;
+        else
+            return false;
     }
 }

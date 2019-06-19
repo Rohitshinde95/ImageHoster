@@ -88,13 +88,5 @@ public class User {
     public void setImages(List<Image> images) {
         this.images = images;
     }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
 }
 

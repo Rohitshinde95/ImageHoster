@@ -11,25 +11,25 @@
 <body>
 <h1>Upload New Image</h1>
 
-<form method="post" th:action="@{/images/upload}" enctype="multipart/form-data">
+<form enctype="multipart/form-data" method="post" th:action="@{/images/upload}">
     <div>Image Title:</div>
-    <div><input type="text" id="title" name="title"/></div>
+    <div><input id="title" name="title" type="text"/></div>
 
     <br>
     <div>Description:</div>
 
-    <div><textarea rows="7" cols="100" name="description"></textarea></div>
+    <div><textarea cols="100" name="description" rows="7"></textarea></div>
     <br>
     <div>
         <label for="file">Upload File</label>
-        <input type="file" name="file" id="file"/>
+        <input id="file" name="file" type="file"/>
     </div>
 
     <!-- This piece of code accepts the string of all the tags separated by a comma-->
     <br>
     <div>
         <label for="tags">Tags</label>
-        <input type="text" name="tags" id="tags"/>
+        <input id="tags" name="tags" type="text"/>
         <p> Multiple tags are allowed. Please separate tags by "," such as labrador,dog,yellow </p>
     </div>
 
